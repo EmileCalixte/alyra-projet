@@ -29,6 +29,8 @@ contract Voting is Ownable {
 
     mapping(address => Voter) public voters;
 
+    Proposal[] public proposals;
+
     event VoterRegistered(address VoterAddress);
 
     event WorkflowStatusChanged(WorkflowStatus previousStatus, WorkflowStatus newStatus);
@@ -36,6 +38,14 @@ contract Voting is Ownable {
     event ProposalRegistered(uint proposalId);
 
     event Voted(address voter, uint proposalId);
+
+    /**
+     * @dev Throws if called by an address which is not a registered voter
+     */
+    modifier onlyRegistered() {
+        require(voters[msg.sender].isRegistered == true, "You must be registered to do this");
+        _;
+    }
 
     /**
      * @dev Throws if called during a phase other than the voter registration phase
@@ -80,6 +90,22 @@ contract Voting is Ownable {
      */
     function endProposalsRegistration() external onlyOwner onlyWhileProposalsRegistrationStarted {
         _changeWorkflowStatus(WorkflowStatus.ProposalsRegistrationEnded);
+    }
+
+    /**
+     * @dev Adds a new proposal
+     */
+    function submitProposal(string memory _description) external onlyRegistered onlyWhileProposalsRegistrationStarted {
+        Proposal memory proposal = Proposal(_description, 0);
+
+        proposals.push(proposal);
+    }
+
+    /**
+     * @dev Returns the number of proposals
+     */
+    function getProposalCount() external view returns (uint) {
+        return proposals.length;
     }
 
     /**
