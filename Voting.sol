@@ -31,6 +31,8 @@ contract Voting is Ownable {
 
     Proposal[] public proposals;
 
+    uint private winningProposalId;
+
     event VoterRegistered(address VoterAddress);
 
     event WorkflowStatusChanged(WorkflowStatus previousStatus, WorkflowStatus newStatus);
@@ -88,6 +90,22 @@ contract Voting is Ownable {
     }
 
     /**
+     * @dev Throws if called during a phase other than after the voting session
+     */
+    modifier onlyWhileVotingSessionEnded() {
+        require(workflowStatus == WorkflowStatus.VotingSessionEnded, "You can do this only just after the voting session");
+        _;
+    }
+
+    /**
+     * @dev Throws if called before the votes have been tallied
+     */
+    modifier onlyWhenVotesTallied() {
+        require(workflowStatus == WorkflowStatus.VotesTallied, "You can do this only after the votes have been tallied");
+        _;
+    }
+
+    /**
      * @dev Throws if `proposalId` does not refer to an existing proposal
      */
     modifier proposalExists(uint _proposalId) {
@@ -139,6 +157,22 @@ contract Voting is Ownable {
     }
 
     /**
+     * @dev Finds the proposal that received the most votes
+     */
+    function tallyVotes() external onlyOwner onlyWhileVotingSessionEnded {
+        uint maxVoteCount = 0;
+
+        for (uint i = 0; i < proposals.length; i++) {
+            if (proposals[i].voteCount > maxVoteCount) {
+                maxVoteCount = proposals[i].voteCount;
+                winningProposalId = i;
+            }
+        }
+
+        _changeWorkflowStatus(WorkflowStatus.VotesTallied);
+    }
+
+    /**
      * @dev Adds a new proposal
      */
     function submitProposal(string memory _description) external onlyRegistered onlyWhileProposalsRegistrationStarted {
@@ -166,6 +200,13 @@ contract Voting is Ownable {
         voters[msg.sender].votedProposalId = _proposalId;
 
         emit Voted(msg.sender, _proposalId);
+    }
+
+    /**
+     * @dev Returns the ID of the winning proposal
+     */
+    function getWinningProposal() external view onlyWhenVotesTallied returns (uint) {
+        return winningProposalId;
     }
 
     /**
