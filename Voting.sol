@@ -99,12 +99,14 @@ contract Voting is Ownable {
         Proposal memory proposal = Proposal(_description, 0);
 
         proposals.push(proposal);
+
+        emit ProposalRegistered(getProposalCount() - 1);
     }
 
     /**
      * @dev Returns the number of proposals
      */
-    function getProposalCount() external view returns (uint) {
+    function getProposalCount() public view returns (uint) {
         return proposals.length;
     }
 
