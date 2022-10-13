@@ -64,6 +64,22 @@ contract Voting is Ownable {
     }
 
     /**
+     * @dev Throws if called during a phase other than between proposals registration phase and voting phase
+     */
+    modifier onlyWhileProposalsRegistrationEnded() {
+        require(workflowStatus == WorkflowStatus.ProposalsRegistrationEnded, "You can do this only between the proposals registration phase and the voting session");
+        _;
+    }
+
+    /**
+     * @dev Throws if called during a phase other than the voting session
+     */
+    modifier onlyWhileVotingSessionStarted() {
+        require(workflowStatus == WorkflowStatus.VotingSessionStarted, "You can do this only during the voting session");
+        _;
+    }
+
+    /**
      * @dev Registers a new voter
      */
     function registerVoter(address _voterAddress) external onlyOwner onlyWhileRegisteringVoters {
@@ -90,6 +106,20 @@ contract Voting is Ownable {
      */
     function endProposalsRegistration() external onlyOwner onlyWhileProposalsRegistrationStarted {
         _changeWorkflowStatus(WorkflowStatus.ProposalsRegistrationEnded);
+    }
+
+    /**
+     * @dev Starts the voting session
+     */
+    function startVotingSession() external onlyOwner onlyWhileProposalsRegistrationEnded {
+        _changeWorkflowStatus(WorkflowStatus.VotingSessionStarted);
+    }
+
+    /**
+     * @dev Ends the voting session
+     */
+    function endVotingSession() external onlyOwner onlyWhileVotingSessionStarted {
+        _changeWorkflowStatus(WorkflowStatus.VotingSessionEnded);
     }
 
     /**
