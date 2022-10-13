@@ -158,6 +158,7 @@ contract Voting is Ownable {
 
     /**
      * @dev Finds the proposal that received the most votes
+     * TODO handle the case where several proposals have the same number of votes
      */
     function tallyVotes() external onlyOwner onlyWhileVotingSessionEnded {
         uint maxVoteCount = 0;
