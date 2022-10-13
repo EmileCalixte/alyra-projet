@@ -46,6 +46,14 @@ contract Voting is Ownable {
     }
 
     /**
+     * @dev Throws if called during a phase other than the proposals registration phase
+     */
+    modifier onlyWhileProposalsRegistrationStarted() {
+        require(workflowStatus == WorkflowStatus.ProposalsRegistrationStarted, "You can do this only during the proposals registration phase");
+        _;
+    }
+
+    /**
      * @dev Registers a new voter
      */
     function registerVoter(address _voterAddress) external onlyOwner onlyWhileRegisteringVoters {
@@ -58,5 +66,29 @@ contract Voting is Ownable {
      */
     function isVoter(address _address) external view returns (bool) {
         return voters[_address].isRegistered;
+    }
+
+    /**
+     * @dev Starts proposals registration phase
+     */
+    function startProposalsRegistration() external onlyOwner onlyWhileRegisteringVoters {
+        _changeWorkflowStatus(WorkflowStatus.ProposalsRegistrationStarted);
+    }
+
+    /**
+     * @dev Ends proposals registration phase
+     */
+    function endProposalsRegistration() external onlyOwner onlyWhileProposalsRegistrationStarted {
+        _changeWorkflowStatus(WorkflowStatus.ProposalsRegistrationEnded);
+    }
+
+    /**
+     * @dev Switches workflow status to `_newStatus`
+     */
+    function _changeWorkflowStatus(WorkflowStatus _newStatus) internal {
+        WorkflowStatus previousStatus = workflowStatus;
+        workflowStatus = _newStatus;
+
+        emit WorkflowStatusChanged(previousStatus, _newStatus);
     }
 }
