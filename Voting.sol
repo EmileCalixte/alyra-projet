@@ -48,6 +48,14 @@ contract Voting is Ownable {
     }
 
     /**
+     * @dev Throws if called by an address who has already voted
+     */
+    modifier onlyNotYetVoted() {
+        require(voters[msg.sender].hasVoted == false, "You have already voted");
+        _;
+    }
+
+    /**
      * @dev Throws if called during a phase other than the voter registration phase
      */
     modifier onlyWhileRegisteringVoters() {
@@ -76,6 +84,14 @@ contract Voting is Ownable {
      */
     modifier onlyWhileVotingSessionStarted() {
         require(workflowStatus == WorkflowStatus.VotingSessionStarted, "You can do this only during the voting session");
+        _;
+    }
+
+    /**
+     * @dev Throws if `proposalId` does not refer to an existing proposal
+     */
+    modifier proposalExists(uint _proposalId) {
+        require(_proposalId < getProposalCount(), "This proposal does not exist");
         _;
     }
 
@@ -138,6 +154,18 @@ contract Voting is Ownable {
      */
     function getProposalCount() public view returns (uint) {
         return proposals.length;
+    }
+
+    /**
+     * @dev Saves the vote of a voter for the proposal `proposalId`
+     */
+    function vote(uint _proposalId) external onlyWhileVotingSessionStarted onlyRegistered onlyNotYetVoted proposalExists(_proposalId) {
+        proposals[_proposalId].voteCount++;
+
+        voters[msg.sender].hasVoted = true;
+        voters[msg.sender].votedProposalId = _proposalId;
+
+        emit Voted(msg.sender, _proposalId);
     }
 
     /**
