@@ -151,6 +151,8 @@ contract Voting is Ownable {
      * @dev Ends proposals registration phase
      */
     function endProposalsRegistration() external onlyOwner onlyWhileProposalsRegistrationStarted {
+        require(proposals.length > 0, "No proposals have been submitted");
+
         _changeWorkflowStatus(WorkflowStatus.ProposalsRegistrationEnded);
     }
 
