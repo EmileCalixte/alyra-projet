@@ -31,6 +31,12 @@ contract Voting is Ownable {
 
     Proposal[] public proposals;
 
+    // Used to check if a submitted proposal already exists.
+    // We could iterate over the `proposals` array and compare strings, but using an additionnal mapping uses a constant
+    // amount of gas regardless the amount of proposals, where the amount of gas used by iterating over an array varies 
+    // with the length of the array
+    mapping(string => bool) private existingProposalDescriptions;
+
     uint private winningProposalId;
 
     event VoterRegistered(address VoterAddress);
@@ -177,9 +183,12 @@ contract Voting is Ownable {
      * @dev Adds a new proposal
      */
     function submitProposal(string memory _description) external onlyRegistered onlyWhileProposalsRegistrationStarted {
+        require(existingProposalDescriptions[_description] == false, "This proposal already exists");
+
         Proposal memory proposal = Proposal(_description, 0);
 
         proposals.push(proposal);
+        existingProposalDescriptions[_description] = true;
 
         emit ProposalRegistered(getProposalCount() - 1);
     }
