@@ -37,7 +37,13 @@ contract Voting is Ownable {
     // with the length of the array
     mapping(string => bool) private existingProposalDescriptions;
 
+    // Used to store temporarily the proposal ids having the most vote count, and then break the tie if multiple
+    // proposals are equal
+    uint[] private potentialWinningProposalIds;
+
     uint private winningProposalId;
+
+    uint private randomNonce = 0;
 
     event VoterRegistered(address VoterAddress);
 
@@ -170,10 +176,21 @@ contract Voting is Ownable {
         uint maxVoteCount = 0;
 
         for (uint i = 0; i < proposals.length; i++) {
-            if (proposals[i].voteCount > maxVoteCount) {
+            if (proposals[i].voteCount == maxVoteCount) {
+                potentialWinningProposalIds.push(i);
+            } else if (proposals[i].voteCount > maxVoteCount) {
+                // Clear current potential winning proposal ids because we found a proposal which have more votes
+                delete potentialWinningProposalIds;
+                
+                potentialWinningProposalIds.push(i);
                 maxVoteCount = proposals[i].voteCount;
-                winningProposalId = i;
             }
+        }
+
+        if (potentialWinningProposalIds.length == 1) {
+            winningProposalId = potentialWinningProposalIds[0];
+        } else {
+            winningProposalId = potentialWinningProposalIds[_getRandomUint(potentialWinningProposalIds.length - 1)];
         }
 
         _changeWorkflowStatus(WorkflowStatus.VotesTallied);
@@ -227,5 +244,13 @@ contract Voting is Ownable {
         workflowStatus = _newStatus;
 
         emit WorkflowStatusChanged(previousStatus, _newStatus);
+    }
+
+    /**
+     * @dev Returns a pseudorandom uint between 0 and `_max` (included)
+     */
+    function _getRandomUint(uint _max) internal returns (uint) {
+        randomNonce++;
+        return uint(keccak256(abi.encodePacked(block.timestamp, msg.sender, randomNonce))) % (_max + 1);
     }
 }
