@@ -1,5 +1,26 @@
 # Alyra projet
 
+## Lancement du projet
+
+### Avec Docker
+
+Il est possible d'exécuter l'environnement dans un conteneur Docker grâce au fichier `docker-compose.yml`. Pour lancer l'environnement dans Docker :
+
+```sh
+docker compose up
+```
+
+Lors du démarrage, les dépendances NPM sont installées si nécessaire et la blockchain de développement hardhat est lancée.
+
+> Pour exécuter des commandes dans le container, par exemple pour compiler ou lancer les tests, il faudra les précéder de `docker compose exec hardhat <commande>`.
+
+### Sans Docker
+
+```sh
+npm install
+npx hardhat node
+```
+
 ## Objectif
 
 Un smart contract de vote pour une petite organisation. Les électeurs, que l'organisation connaît tous, sont inscrits sur une whitelist grâce à leur adresse Ethereum. Ils peuvent soumettre de nouvelles propositions lors d'une session d'enregistrement des propositions, et peuvent voter sur les propositions lors de la session de vote.
