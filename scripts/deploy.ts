@@ -1,7 +1,11 @@
 import { ethers } from "hardhat";
 
+export const getVotingFactory = async () => {
+    return await ethers.getContractFactory("Voting");
+}
+
 async function main() {
-    const Voting = await ethers.getContractFactory("Voting");
+    const Voting = await getVotingFactory();
     const voting = await Voting.deploy();
 
     await voting.deployed();
