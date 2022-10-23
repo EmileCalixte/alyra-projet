@@ -21,6 +21,28 @@ npm install
 npx hardhat node
 ```
 
+## Tests automatisés
+
+Les tests automatisés se lancent avec la commande suivante
+
+```sh
+npx hardhat test
+```
+
+## Compilation et déploiement
+
+Compiler les smart contracts :
+
+```sh
+npx hardhat compile
+```
+
+Exécuter le script de déploiement :
+
+```sh
+npx hardhat run scripts/deploy.ts
+```
+
 ## Objectif
 
 Un smart contract de vote pour une petite organisation. Les électeurs, que l'organisation connaît tous, sont inscrits sur une whitelist grâce à leur adresse Ethereum. Ils peuvent soumettre de nouvelles propositions lors d'une session d'enregistrement des propositions, et peuvent voter sur les propositions lors de la session de vote.
