@@ -97,6 +97,24 @@ describe("Voting", () => {
             expect((await voting.proposals(0)).description).to.equal(testProposalDescription);
         });
 
+        it("Should revert if the proposal already exists", async () => {
+            const { voting, registeredVoters } = await loadFixture(deployRegisterProposalFixture);
+
+            await voting.startProposalsRegistration();
+
+            expect(await voting.getProposalCount()).to.equal(0);
+
+            await expect(voting.connect(registeredVoters[0]).submitProposal(testProposalDescription))
+                .not.to.be.reverted;
+
+            expect(await voting.getProposalCount()).to.equal(1);
+
+            await expect(voting.connect(registeredVoters[0]).submitProposal(testProposalDescription))
+                .to.be.revertedWith("This proposal already exists");
+
+            expect(await voting.getProposalCount()).to.equal(1);
+        });
+
         it("Should revert if a proposal is submitted by an account which is not registered as a voter", async () => {
             const { voting, notRegisteredAccounts } = await loadFixture(deployRegisterProposalFixture);
 
