@@ -13,57 +13,70 @@ describe("Voting", () => {
         return {voting, owner, otherAccounts};
     }
 
-    describe("Register Voter", async () => {
-        it("Should register a voter", async () => {
-            const { voting, otherAccounts } = await loadFixture(deployFixture);
+    describe("Add Voter", async () => {
+        it("Should add a voter", async () => {
+            const { voting, owner } = await loadFixture(deployFixture);
 
-            expect(await voting.isVoter(otherAccounts[0].address)).to.equal(false);
+            await voting.addVoter(owner.address);
 
-            await voting.registerVoter(otherAccounts[0].address);
-
-            expect(await voting.isVoter(otherAccounts[0].address)).to.equal(true);
+            expect((await voting.getVoter(owner.address)).isRegistered).to.equal(true);
         });
 
-        it("Should prevent other account to register a voter", async () => {
-            const { voting, otherAccounts } = await loadFixture(deployFixture);
+        it("Should prevent other account to add a voter", async () => {
+            const { voting, owner, otherAccounts } = await loadFixture(deployFixture);
 
-            expect(await voting.isVoter(otherAccounts[0].address)).to.equal(false);
+            await voting.addVoter(owner.address);
 
-            await expect(voting.connect(otherAccounts[0]).registerVoter(otherAccounts[0].address))
+            await expect(voting.connect(otherAccounts[0]).addVoter(otherAccounts[0].address))
                 .to.be.revertedWith("Ownable: caller is not the owner");
 
-            expect(await voting.isVoter(otherAccounts[0].address)).to.equal(false);
+            expect((await voting.getVoter(otherAccounts[0].address)).isRegistered).to.equal(false);
         });
 
-        it("Should prevent other account to register a voter even if it's a registered voter", async () => {
-            const { voting, otherAccounts } = await loadFixture(deployFixture);
+        it("Should prevent other account to add a voter even if it's a registered voter", async () => {
+            const { voting, owner, otherAccounts } = await loadFixture(deployFixture);
 
-            await voting.registerVoter(otherAccounts[0].address);
+            await voting.addVoter(owner.address);
+            await voting.addVoter(otherAccounts[0].address);
 
-            await expect(voting.connect(otherAccounts[0]).registerVoter(otherAccounts[1].address))
+            await expect(voting.connect(otherAccounts[0]).addVoter(otherAccounts[1].address))
                 .to.be.revertedWith("Ownable: caller is not the owner");
 
-            expect(await voting.isVoter(otherAccounts[1].address)).to.equal(false);
+            expect((await voting.getVoter(otherAccounts[1].address)).isRegistered).to.equal(false);
         });
 
         it("Should emit VoterRegistered event", async () => {
             const { voting, otherAccounts } = await loadFixture(deployFixture);
 
-            await expect(voting.registerVoter(otherAccounts[0].address))
+            await expect(voting.addVoter(otherAccounts[0].address))
                 .to.emit(voting, "VoterRegistered")
                 .withArgs(otherAccounts[0].address);
         });
 
-        it("Should prevent to register a voter if Registering Voters phase is closed", async () => {
-            const { voting, otherAccounts } = await loadFixture(deployFixture);
+        it("Should prevent to add a voter if Registering Voters phase is closed", async () => {
+            const { voting, owner, otherAccounts } = await loadFixture(deployFixture);
+
+            await voting.addVoter(owner.address);
 
             // End registering voters phase by starting the next phase
-            await voting.startProposalsRegistration();
+            await voting.startProposalsRegistering();
 
-            await expect(voting.registerVoter(otherAccounts[0].address))
-                .to.be.revertedWith("You can do this only during the voter registration phase");
+            await expect(voting.addVoter(otherAccounts[0].address))
+                .to.be.revertedWith("Voters registration is not open yet");
 
-            expect(await voting.isVoter(otherAccounts[0].address)).to.equal(false);
+            expect((await voting.getVoter(otherAccounts[0].address)).isRegistered).to.equal(false);
+        });
+
+        it("Should revert if address is already a registered voter", async () => {
+            const { voting, owner, otherAccounts } = await loadFixture(deployFixture);
+
+            await voting.addVoter(owner.address);
+
+            await expect(voting.addVoter(otherAccounts[0].address))
+                .not.to.be.reverted;
+
+            await expect(voting.addVoter(otherAccounts[0].address))
+                .to.be.revertedWith("Already registered");
         });
     });
 
@@ -74,8 +87,10 @@ describe("Voting", () => {
             const registeredVoters = otherAccounts.slice(0, 5);
             const notRegisteredAccounts = otherAccounts.slice(5, otherAccounts.length);
 
+            await voting.addVoter(owner.address);
+
             for (const voter of registeredVoters) {
-                await voting.registerVoter(voter.address);
+                await voting.addVoter(voter.address);
             }
 
             return {voting, owner, registeredVoters, notRegisteredAccounts};
@@ -83,75 +98,67 @@ describe("Voting", () => {
 
         const testProposalDescription = "Test proposal description";
 
-        it("Should register a proposal from a registered voter", async () => {
-            const { voting, registeredVoters } = await loadFixture(deployRegisterProposalFixture);
+        it("Should add a genesis proposal when proposals registering starts", async () => {
+            const { voting } = await loadFixture(deployRegisterProposalFixture);
 
-            await voting.startProposalsRegistration();
+            await voting.startProposalsRegistering();
 
-            expect(await voting.getProposalCount()).to.equal(0);
-
-            await voting.connect(registeredVoters[0]).submitProposal(testProposalDescription);
-
-            expect(await voting.getProposalCount()).to.equal(1);
-
-            expect((await voting.proposals(0)).description).to.equal(testProposalDescription);
+            expect((await voting.getOneProposal(0)).description).to.equal('GENESIS');
         });
 
-        it("Should revert if the proposal already exists", async () => {
+        it("Should add a proposal from a registered voter", async () => {
             const { voting, registeredVoters } = await loadFixture(deployRegisterProposalFixture);
 
-            await voting.startProposalsRegistration();
+            await voting.startProposalsRegistering();
 
-            expect(await voting.getProposalCount()).to.equal(0);
+            await voting.connect(registeredVoters[0]).addProposal(testProposalDescription);
 
-            await expect(voting.connect(registeredVoters[0]).submitProposal(testProposalDescription))
-                .not.to.be.reverted;
+            expect((await voting.getOneProposal(1)).description).to.equal(testProposalDescription);
+        });
 
-            expect(await voting.getProposalCount()).to.equal(1);
+        it("Should revert if proposal description is empty", async () => {
+            const { voting } = await loadFixture(deployRegisterProposalFixture);
 
-            await expect(voting.connect(registeredVoters[0]).submitProposal(testProposalDescription))
-                .to.be.revertedWith("This proposal already exists");
+            await voting.startProposalsRegistering();
 
-            expect(await voting.getProposalCount()).to.equal(1);
+            await expect(voting.addProposal(""))
+                .to.be.revertedWith("Vous ne pouvez pas ne rien proposer");
         });
 
         it("Should revert if a proposal is submitted by an account which is not registered as a voter", async () => {
             const { voting, notRegisteredAccounts } = await loadFixture(deployRegisterProposalFixture);
 
-            await voting.startProposalsRegistration();
+            await voting.startProposalsRegistering();
 
-            expect(await voting.getProposalCount()).to.equal(0);
-
-            await expect(voting.connect(notRegisteredAccounts[0]).submitProposal(testProposalDescription))
-                .to.be.revertedWith("You must be registered to do this");
-
-            expect(await voting.getProposalCount()).to.equal(0);
+            await expect(voting.connect(notRegisteredAccounts[0]).addProposal(testProposalDescription))
+                .to.be.revertedWith("You're not a voter");
         });
 
-        it("Should revert only if current workflow status is not ProposalsRegistrationStarted", async () => {
+        it("Should revert if current workflow status is not ProposalsRegistrationStarted", async () => {
             const { voting, registeredVoters } = await loadFixture(deployRegisterProposalFixture);
 
-            await expect(voting.connect(registeredVoters[0]).submitProposal(testProposalDescription))
-                .to.be.revertedWith("You can do this only during the proposals registration phase");
+            await expect(voting.connect(registeredVoters[0]).addProposal(testProposalDescription))
+                .to.be.revertedWith("Proposals are not allowed yet");
 
-            await voting.startProposalsRegistration();
+            await voting.startProposalsRegistering();
 
-            await expect(voting.connect(registeredVoters[0]).submitProposal(testProposalDescription))
+            await expect(voting.connect(registeredVoters[0]).addProposal(testProposalDescription))
                 .not.to.be.reverted;
 
-            await voting.endProposalsRegistration();
+            await voting.endProposalsRegistering();
 
-            await expect(voting.connect(registeredVoters[0]).submitProposal(testProposalDescription))
-                .to.be.revertedWith("You can do this only during the proposals registration phase");
+            await expect(voting.connect(registeredVoters[0]).addProposal(testProposalDescription))
+                .to.be.revertedWith("Proposals are not allowed yet");
         });
 
-        it("Should revert if proposals registration phase is closed without a submitted proposal", async () => {
-            const { voting } = await loadFixture(deployRegisterProposalFixture);
+        it("Should emit ProposalRegistered event", async () => {
+            const { voting, registeredVoters } = await loadFixture(deployRegisterProposalFixture);
 
-            await voting.startProposalsRegistration();
+            await voting.startProposalsRegistering();
 
-            await expect(voting.endProposalsRegistration())
-                .to.be.revertedWith("No proposals have been submitted");
+            await expect(voting.connect(registeredVoters[0]).addProposal(testProposalDescription))
+                .to.emit(voting, "ProposalRegistered")
+                .withArgs(1); // Index of the 2nd proposal, because a first proposal is created at proposals registering start
         });
     });
 });
