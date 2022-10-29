@@ -161,4 +161,98 @@ describe("Voting", () => {
                 .withArgs(1); // Index of the 2nd proposal, because a first proposal is created at proposals registering start
         });
     });
+
+    describe("Vote", async () => {
+        const deployVoteFixture = async () => {
+            const { voting, owner, otherAccounts } = await deployFixture();
+
+            const registeredVoters = otherAccounts.slice(0, 5);
+            const notRegisteredAccounts = otherAccounts.slice(5, otherAccounts.length);
+
+            await voting.addVoter(owner.address);
+
+            for (const voter of registeredVoters) {
+                await voting.addVoter(voter.address);
+            }
+
+            await voting.startProposalsRegistering();
+
+            await voting.connect(registeredVoters[0]).addProposal("Proposal 1");
+            await voting.connect(registeredVoters[1]).addProposal("Proposal 2");
+            await voting.connect(registeredVoters[2]).addProposal("Proposal 3");
+
+            await voting.endProposalsRegistering();
+
+            return {voting, owner, registeredVoters, notRegisteredAccounts};
+        }
+
+        it("Should register a vote", async () => {
+            const { voting, registeredVoters } = await loadFixture(deployVoteFixture);
+
+            await voting.startVotingSession();
+
+            await voting.connect(registeredVoters[0]).setVote(1);
+
+            expect((await voting.getVoter(registeredVoters[0].address)).hasVoted).to.equal(true);
+            expect((await voting.getVoter(registeredVoters[0].address)).votedProposalId).to.equal(1);
+            expect((await voting.getOneProposal(1)).voteCount).to.equal(1);
+        });
+
+        it("Should revert if address is not a registered voter", async () => {
+            const { voting, notRegisteredAccounts } = await loadFixture(deployVoteFixture);
+
+            await voting.startVotingSession();
+
+            await expect(voting.connect(notRegisteredAccounts[0]).setVote(1))
+                .to.be.revertedWith("You're not a voter");
+        });
+
+        it("Should revert if voter has already voted", async () => {
+            const { voting, registeredVoters } = await loadFixture(deployVoteFixture);
+
+            await voting.startVotingSession();
+
+            await expect(voting.connect(registeredVoters[0]).setVote(1))
+                .not.to.be.reverted;
+
+            await expect(voting.connect(registeredVoters[0]).setVote(2))
+                .to.be.revertedWith("You have already voted");
+        });
+
+        it("Should revert if proposal does not exist", async () => {
+            const { voting, registeredVoters } = await loadFixture(deployVoteFixture);
+
+            await voting.startVotingSession();
+
+            await expect(voting.connect(registeredVoters[0]).setVote(999))
+                .to.be.revertedWith("Proposal not found");
+        })
+
+        it("Should revert if workflow status is not VotingSessionStarted", async () => {
+            const { voting, registeredVoters } = await loadFixture(deployVoteFixture);
+
+            await expect(voting.connect(registeredVoters[0]).setVote(1))
+                .to.be.revertedWith("Voting session havent started yet");
+
+            await voting.startVotingSession();
+
+            await expect(voting.connect(registeredVoters[0]).setVote(1))
+                .not.to.be.reverted;
+
+            await voting.endVotingSession();
+
+            await expect(voting.connect(registeredVoters[1]).setVote(1))
+                .to.be.revertedWith("Voting session havent started yet");
+        });
+
+        it("Should emit Voted event", async () => {
+            const { voting, registeredVoters } = await loadFixture(deployVoteFixture);
+
+            await voting.startVotingSession();
+
+            await expect(voting.connect(registeredVoters[0]).setVote(1))
+                .to.emit(voting, "Voted")
+                .withArgs(registeredVoters[0].address, 1);
+        })
+    });
 });
