@@ -304,6 +304,15 @@ describe("Voting", () => {
             expect(voting.winningProposalID).not.to.equal(3); // Because proposal 3 has less votes than 1 and 2
         });
 
+        it("Should prevent other account from tallying votes", async () => {
+            const { voting, registeredVoters } = await loadFixture(deployTallyVotesFixture);
+
+            await voting.endVotingSession();
+
+            await expect(voting.connect(registeredVoters[0]).tallyVotes())
+                .to.be.revertedWith("Ownable: caller is not the owner");
+        })
+
         it("Should emit WorkflowStatusChange event", async () => {
             const { voting } = await loadFixture(deployTallyVotesFixture);
 
