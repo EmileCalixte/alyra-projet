@@ -255,4 +255,63 @@ describe("Voting", () => {
                 .withArgs(registeredVoters[0].address, 1);
         })
     });
+
+    describe("Tally votes", async () => {
+        const deployTallyVotesFixture = async () => {
+            const { voting, owner, otherAccounts } = await deployFixture();
+
+            const registeredVoters = otherAccounts.slice(0, 5);
+            const notRegisteredAccounts = otherAccounts.slice(5, otherAccounts.length);
+
+            await voting.addVoter(owner.address);
+
+            for (const voter of registeredVoters) {
+                await voting.addVoter(voter.address);
+            }
+
+            await voting.startProposalsRegistering();
+
+            await voting.connect(registeredVoters[0]).addProposal("Proposal 1");
+            await voting.connect(registeredVoters[1]).addProposal("Proposal 2");
+            await voting.connect(registeredVoters[2]).addProposal("Proposal 3");
+
+            await voting.endProposalsRegistering();
+            await voting.startVotingSession();
+
+            await voting.connect(registeredVoters[0]).setVote(1);
+            await voting.connect(registeredVoters[1]).setVote(1);
+            await voting.connect(registeredVoters[2]).setVote(2);
+            await voting.connect(registeredVoters[3]).setVote(2);
+            await voting.connect(registeredVoters[4]).setVote(3);
+
+            return {voting, owner, registeredVoters, notRegisteredAccounts};
+        }
+
+        it("Should revert if workflow status is not VotingSessionEnded", async () => {
+            const { voting } = await loadFixture(deployTallyVotesFixture);
+
+            await expect(voting.tallyVotes()).to.be.revertedWith("Current status is not voting session ended");
+        });
+
+        it("Should tally votes", async () => {
+            const { voting } = await loadFixture(deployTallyVotesFixture);
+
+            await voting.endVotingSession();
+
+            await expect(voting.tallyVotes()).not.to.be.reverted;
+
+            expect(voting.winningProposalID).not.to.equal(0);
+            expect(voting.winningProposalID).not.to.equal(3); // Because proposal 3 has less votes than 1 and 2
+        });
+
+        it("Should emit WorkflowStatusChange event", async () => {
+            const { voting } = await loadFixture(deployTallyVotesFixture);
+
+            await voting.endVotingSession();
+
+            await expect(voting.tallyVotes())
+                .to.emit(voting, "WorkflowStatusChange")
+                .withArgs(4, 5);
+        });
+    })
 });
