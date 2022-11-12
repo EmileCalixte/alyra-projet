@@ -12,7 +12,10 @@ const config: HardhatUserConfig = {
   },
   gasReporter: {
     enabled: true,
-  }
+  },
+  paths: {
+    artifacts: "../frontend/public/artifacts",
+  },
 };
 
 export default config;
