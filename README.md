@@ -2,10 +2,6 @@
 
 ## Lancement du projet
 
-### Avec Docker
-
-Il est possible d'exécuter l'environnement dans un conteneur Docker grâce au fichier `docker-compose.yml`. Pour lancer l'environnement dans Docker :
-
 ```sh
 docker compose up
 ```
@@ -14,19 +10,12 @@ Lors du démarrage, les dépendances NPM sont installées si nécessaire et la b
 
 > Pour exécuter des commandes dans le container, par exemple pour compiler ou lancer les tests, il faudra les précéder de `docker compose exec hardhat <commande>`.
 
-### Sans Docker
-
-```sh
-npm install
-npx hardhat node
-```
-
 ## Tests automatisés
 
 Les tests automatisés se lancent avec la commande suivante
 
 ```sh
-npx hardhat test
+docker compose exec hardhat npx hardhat test
 ```
 
 <details>
@@ -65,13 +54,13 @@ npx hardhat test
 Compiler les smart contracts :
 
 ```sh
-npx hardhat compile
+docker compose exec hardhat npx hardhat compile
 ```
 
 Exécuter le script de déploiement :
 
 ```sh
-npx hardhat run scripts/deploy.ts
+docker compose exec hardhat npx hardhat run scripts/deploy.ts
 ```
 
 ## Objectif
