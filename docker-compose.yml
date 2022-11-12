@@ -3,7 +3,7 @@ version: "3.8"
 services:
   hardhat:
     image: node:16
-    working_dir: /home/node/app
+    working_dir: /home/node/app/hardhat
     volumes:
       - ./:/home/node/app
     ports:
