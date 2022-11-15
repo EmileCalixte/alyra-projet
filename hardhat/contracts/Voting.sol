@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.8.0;
+
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 
@@ -30,7 +31,7 @@ contract Voting is Ownable {
 
     WorkflowStatus public workflowStatus;
     Proposal[] proposalsArray;
-    mapping (address => Voter) voters;
+    mapping(address => Voter) voters;
 
 
     event VoterRegistered(address voterAddress);
@@ -96,7 +97,7 @@ contract Voting is Ownable {
         Proposal memory proposal;
         proposal.description = _desc;
         proposalsArray.push(proposal);
-        emit ProposalRegistered(proposalsArray.length-1);
+        emit ProposalRegistered(proposalsArray.length - 1);
     }
 
     // ::::::::::::: VOTE ::::::::::::: //
@@ -105,7 +106,7 @@ contract Voting is Ownable {
      * @dev Saves the vote of a voter for the proposal associated to _id
      * @param _id The selected proposal ID
      */
-    function setVote( uint _id) external onlyVoters {
+    function setVote(uint _id) external onlyVoters {
         require(workflowStatus == WorkflowStatus.VotingSessionStarted, 'Voting session havent started yet');
         require(voters[msg.sender].hasVoted != true, 'You have already voted');
         require(_id < proposalsArray.length, 'Proposal not found'); // pas obligé, et pas besoin du >0 car uint
@@ -168,10 +169,10 @@ contract Voting is Ownable {
      * @dev Change workflowStatus to VotesTallied
      */
     function tallyVotes() external onlyOwner {
-       require(workflowStatus == WorkflowStatus.VotingSessionEnded, "Current status is not voting session ended");
+        require(workflowStatus == WorkflowStatus.VotingSessionEnded, "Current status is not voting session ended");
 
-       workflowStatus = WorkflowStatus.VotesTallied;
+        workflowStatus = WorkflowStatus.VotesTallied;
 
-       emit WorkflowStatusChange(WorkflowStatus.VotingSessionEnded, WorkflowStatus.VotesTallied);
+        emit WorkflowStatusChange(WorkflowStatus.VotingSessionEnded, WorkflowStatus.VotesTallied);
     }
 }
