@@ -12,7 +12,7 @@
 /build
 
 #Hardhat files
-artifacts
+/src/artifacts
 
 # misc
 .DS_Store

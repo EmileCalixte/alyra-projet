@@ -14,7 +14,7 @@ const config: HardhatUserConfig = {
     enabled: true,
   },
   paths: {
-    artifacts: "../frontend/public/artifacts",
+    artifacts: "../frontend/src/artifacts",
   },
 };
 
