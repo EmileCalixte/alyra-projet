@@ -1,32 +1,53 @@
 import '../css/index.css';
-import {ethers} from "ethers";
-import {useEffect, useState} from "react";
+import {ethers, providers} from "ethers";
+import {useCallback, useEffect, useState} from "react";
+
+import {abi as VOTING_ABI} from "../artifacts/contracts/Voting.sol/Voting.json";
 
 const App = () => {
+    const [provider, setProvider] = useState<providers.Web3Provider|undefined|null>(undefined);
     const [account, setAccount] = useState<string|undefined>(undefined);
+    const [voting, setVoting] = useState<ethers.Contract|undefined>(undefined);
 
-    const connectToMetamask = async () => {
+    useEffect(() => {
+        console.log("Initializing provider");
+
         if (!window.ethereum) {
             console.error("No provider found in navigator");
+            setProvider(null);
             return;
         }
 
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const provider = new providers.Web3Provider(window.ethereum);
 
-        console.log('provider', provider);
+        console.log("Provider", provider);
 
-        const accounts = await provider.send("eth_requestAccounts", []);
+        setProvider(provider);
 
-        console.log(accounts);
+        console.log("Initializing contract", process.env.REACT_APP_VOTING_ADDRESS, VOTING_ABI);
 
-        setAccount(accounts[0]);
-    }
+        const voting = new ethers.Contract(process.env.REACT_APP_VOTING_ADDRESS as string, VOTING_ABI as any, provider);
+
+        setVoting(voting);
+    }, []);
 
     useEffect(() => {
         (window as any).ethereum.on('chainChanged', (chainId: any) => {
             console.log('Chain changed', chainId, parseInt(chainId, 16));
         });
     }, []);
+
+    const connectToMetamask = useCallback(async () => {
+        if (!provider) {
+            return;
+        }
+
+        const accounts = await provider.send("eth_requestAccounts", []);
+
+        setAccount(accounts[0]);
+    }, [provider]);
+
+    console.log(voting);
 
     return (
         <div className="app">
