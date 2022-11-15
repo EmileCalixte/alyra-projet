@@ -50,6 +50,11 @@ const App = () => {
         (window as any).ethereum.on('chainChanged', (chainId: any) => {
             console.log('Chain changed', chainId, parseInt(chainId, 16));
         });
+
+        (window as any).ethereum.on('accountsChanged', (accounts: string[]) => {
+            console.log('Accounts changed', accounts);
+            setAccount(accounts[0]);
+        })
     }, [provider]);
 
     const connectToMetamask = useCallback(async () => {
