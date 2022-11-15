@@ -1,6 +1,6 @@
 import '../css/index.css';
 import {ethers} from "ethers";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 const App = () => {
     const [account, setAccount] = useState<string|undefined>(undefined);
@@ -21,6 +21,12 @@ const App = () => {
 
         setAccount(accounts[0]);
     }
+
+    useEffect(() => {
+        (window as any).ethereum.on('chainChanged', (chainId: any) => {
+            console.log('Chain changed', chainId, parseInt(chainId, 16));
+        });
+    }, []);
 
     return (
         <div className="app">
