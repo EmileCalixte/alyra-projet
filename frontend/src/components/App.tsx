@@ -32,10 +32,14 @@ const App = () => {
     }, []);
 
     useEffect(() => {
+        if (!provider) {
+            return;
+        }
+
         (window as any).ethereum.on('chainChanged', (chainId: any) => {
             console.log('Chain changed', chainId, parseInt(chainId, 16));
         });
-    }, []);
+    }, [provider]);
 
     const connectToMetamask = useCallback(async () => {
         if (!provider) {
@@ -49,15 +53,33 @@ const App = () => {
 
     console.log(voting);
 
+    if (provider === undefined) {
+        return (
+            <div className="app">
+                Loading...
+            </div>
+        )
+    }
+
+    if (provider === null) {
+        return (
+            <div className="app">
+                No web3 provider found
+            </div>
+        )
+    }
+
+    if (account === undefined) {
+        return (
+            <div className="app">
+                <button onClick={connectToMetamask}>Connect to Metamask</button>
+            </div>
+        )
+    }
+
     return (
         <div className="app">
-            {account === undefined &&
-            <button onClick={connectToMetamask}>Connect to Metamask</button>
-            }
-
-            {account !== undefined &&
             <p>Welcome {account}</p>
-            }
         </div>
     );
 }
