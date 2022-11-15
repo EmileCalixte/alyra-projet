@@ -1,8 +1,19 @@
 import '../css/index.css';
 import {ethers, providers} from "ethers";
-import {useCallback, useEffect, useState} from "react";
+import {createContext, useCallback, useEffect, useState} from "react";
 
-import {abi as VOTING_ABI} from "../artifacts/contracts/Voting.sol/Voting.json";
+import VOTING_JSON from "../artifacts/contracts/Voting.sol/Voting.json";
+import Header from "./layout/Header";
+
+interface AppContext {
+    account: string|undefined,
+    // isAccountAdmin: boolean,
+}
+
+export const appContext = createContext<AppContext>({
+    account: undefined,
+    // isAccountAdmin: false,
+});
 
 const App = () => {
     const [provider, setProvider] = useState<providers.Web3Provider|undefined|null>(undefined);
@@ -24,9 +35,9 @@ const App = () => {
 
         setProvider(provider);
 
-        console.log("Initializing contract", process.env.REACT_APP_VOTING_ADDRESS, VOTING_ABI);
+        console.log("Initializing contract", process.env.REACT_APP_VOTING_ADDRESS, VOTING_JSON.abi);
 
-        const voting = new ethers.Contract(process.env.REACT_APP_VOTING_ADDRESS as string, VOTING_ABI as any, provider);
+        const voting = new ethers.Contract(process.env.REACT_APP_VOTING_ADDRESS as string, VOTING_JSON.abi as any, provider);
 
         setVoting(voting);
     }, []);
@@ -79,7 +90,11 @@ const App = () => {
 
     return (
         <div className="app">
-            <p>Welcome {account}</p>
+            <appContext.Provider value={{
+                account
+            }}>
+                <Header/>
+            </appContext.Provider>
         </div>
     );
 }
