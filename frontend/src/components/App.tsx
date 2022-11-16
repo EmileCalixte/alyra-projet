@@ -1,3 +1,4 @@
+import '../css/bootstrap-grid.min.css';
 import '../css/index.css';
 import {ethers, providers} from "ethers";
 import {createContext, useCallback, useEffect, useState} from "react";
@@ -7,18 +8,21 @@ import Header from "./layout/Header";
 
 interface AppContext {
     account: string|undefined,
-    // isAccountAdmin: boolean,
+    isAccountOwner: boolean,
 }
 
 export const appContext = createContext<AppContext>({
     account: undefined,
-    // isAccountAdmin: false,
-});
+    isAccountOwner: false,
+})
 
 const App = () => {
     const [provider, setProvider] = useState<providers.Web3Provider|undefined|null>(undefined);
     const [account, setAccount] = useState<string|undefined>(undefined);
     const [voting, setVoting] = useState<ethers.Contract|undefined>(undefined);
+    const [isContractNotDeployed, setIscontractNotDeployed] = useState<boolean>(false);
+
+    const [isAccountOwner, setIsAccountOwner] = useState<boolean>(false);
 
     useEffect(() => {
         console.log("Initializing provider");
@@ -34,21 +38,27 @@ const App = () => {
         console.log("Provider", provider);
 
         setProvider(provider);
-
-        console.log("Initializing contract", process.env.REACT_APP_VOTING_ADDRESS, VOTING_JSON.abi);
-
-        const voting = new ethers.Contract(process.env.REACT_APP_VOTING_ADDRESS as string, VOTING_JSON.abi as any, provider);
-
-        setVoting(voting);
-    }, []);
+    }, [account]);
 
     useEffect(() => {
         if (!provider) {
             return;
         }
 
-        (window as any).ethereum.on('chainChanged', (chainId: any) => {
-            console.log('Chain changed', chainId, parseInt(chainId, 16));
+        console.log("Initializing contract", process.env.REACT_APP_VOTING_ADDRESS, VOTING_JSON.abi);
+
+        const voting = new ethers.Contract(process.env.REACT_APP_VOTING_ADDRESS as string, VOTING_JSON.abi as any, provider);
+
+        setVoting(voting);
+    }, [provider]);
+
+    useEffect(() => {
+        if (!provider) {
+            return;
+        }
+
+        (window as any).ethereum.on('chainChanged', () => {
+            window.location.reload();
         });
 
         (window as any).ethereum.on('accountsChanged', (accounts: string[]) => {
@@ -56,6 +66,23 @@ const App = () => {
             setAccount(accounts[0]);
         })
     }, [provider]);
+
+    useEffect(() => {
+        if (!voting || !account) {
+            setIsAccountOwner(false);
+            return;
+        }
+
+        (async () => {
+            try {
+                const votingOwner: string = await voting.owner();
+                setIsAccountOwner(votingOwner.toLowerCase() === account.toLowerCase());
+            } catch (error) {
+                // If transaction reverts, then it surely means that the contract does not exist on the network
+                setIscontractNotDeployed(true);
+            }
+        })();
+    }, [voting, account]);
 
     const connectToMetamask = useCallback(async () => {
         if (!provider) {
@@ -66,8 +93,6 @@ const App = () => {
 
         setAccount(accounts[0]);
     }, [provider]);
-
-    console.log(voting);
 
     if (provider === undefined) {
         return (
@@ -85,6 +110,14 @@ const App = () => {
         )
     }
 
+    if (isContractNotDeployed) {
+        return (
+            <div className="app">
+                It seems that the contract does not exist on this network. Please change network and reload.
+            </div>
+        )
+    }
+
     if (account === undefined) {
         return (
             <div className="app">
@@ -96,7 +129,8 @@ const App = () => {
     return (
         <div className="app">
             <appContext.Provider value={{
-                account
+                account,
+                isAccountOwner,
             }}>
                 <Header/>
             </appContext.Provider>

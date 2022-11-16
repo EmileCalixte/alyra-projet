@@ -2,12 +2,12 @@ import {useContext} from "react";
 import {appContext} from "../App";
 
 const Header = () => {
-    const {account} = useContext(appContext);
+    const {account, isAccountOwner} = useContext(appContext);
 
     return (
-        <div style={{border: "1px solid red"}}>
-            {account}
-        </div>
+        <header className="app-header">
+            {account} {isAccountOwner && "(owner)"}
+        </header>
     );
 }
 
