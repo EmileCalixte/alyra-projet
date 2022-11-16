@@ -5,6 +5,7 @@ import {createContext, useCallback, useEffect, useState} from "react";
 
 import VOTING_JSON from "../artifacts/contracts/Voting.sol/Voting.json";
 import Header from "./layout/Header";
+import Util from "../util/Util";
 
 interface AppContext {
     account: string|undefined,
@@ -76,7 +77,7 @@ const App = () => {
         (async () => {
             try {
                 const votingOwner: string = await voting.owner();
-                setIsAccountOwner(votingOwner.toLowerCase() === account.toLowerCase());
+                setIsAccountOwner(Util.areAddressesEqual(votingOwner, account));
             } catch (error) {
                 // If transaction reverts, then it surely means that the contract does not exist on the network
                 setIscontractNotDeployed(true);
