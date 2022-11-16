@@ -1,12 +1,13 @@
 import {useContext} from "react";
 import {appContext} from "../App";
+import Util from "../../util/Util";
 
 const Header = () => {
     const {account, isAccountOwner} = useContext(appContext);
 
     return (
         <header className="app-header">
-            {account} {isAccountOwner && "(owner)"}
+            {Util.shortenAddress(account as string)} {isAccountOwner && "(owner)"}
         </header>
     );
 }
