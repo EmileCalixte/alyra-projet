@@ -4,10 +4,10 @@ import {ethers, providers} from "ethers";
 import {createContext, useCallback, useEffect, useState} from "react";
 
 import VOTING_JSON from "../artifacts/contracts/Voting.sol/Voting.json";
-import Header from "./layout/Header";
 import Util from "../util/Util";
 import AppError from './pages/AppError';
 import ConnectToMetamaskButton from "./ConnectToMetamaskButton";
+import VotingInterface from "./VotingInterface";
 
 interface AppContext {
     chainId: number|undefined,
@@ -148,7 +148,7 @@ const App = () => {
                 account,
                 isAccountOwner,
             }}>
-                <Header/>
+                <VotingInterface/>
             </appContext.Provider>
         </div>
     );
