@@ -7,9 +7,13 @@ const Header = () => {
 
     return (
         <header className="app-header">
-            Network: {Util.getChainName(chainId as number)}
-            &nbsp;-&nbsp;
-            {Util.shortenAddress(account as string)} {isAccountOwner && "(owner)"}
+            <div className="header-network">
+                Network: {Util.getChainName(chainId as number)}
+            </div>
+            <div className="flex-spacer"/>
+            <div className="header-account">
+                {Util.shortenAddress(account as string)} {isAccountOwner && "(owner)"}
+            </div>
         </header>
     );
 }
