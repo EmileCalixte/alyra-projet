@@ -7,6 +7,7 @@ import VOTING_JSON from "../artifacts/contracts/Voting.sol/Voting.json";
 import Header from "./layout/Header";
 import Util from "../util/Util";
 import AppError from './pages/AppError';
+import ConnectToMetamaskButton from "./ConnectToMetamaskButton";
 
 interface AppContext {
     chainId: number|undefined,
@@ -136,9 +137,7 @@ const App = () => {
 
     if (account === undefined) {
         return (
-            <div className="app">
-                <button onClick={connectToMetamask}>Connect to Metamask</button>
-            </div>
+            <ConnectToMetamaskButton onClick={connectToMetamask}/>
         )
     }
 

@@ -1,8 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,400&display=swap');
+
+:root {
+    --button-purple-color: #620fe8;
+}
+
 body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+    font-family: 'Lato', 'Helvetica Neue', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 
@@ -12,6 +16,42 @@ body {
 
 .flex-spacer {
     flex: 1;
+}
+
+.button {
+    font-family: inherit;
+    font-size: 1.05em;
+    font-weight: 700;
+
+    padding: 0.33em 0.67em;
+
+    border-width: 0.2em;
+    border-style: solid;
+    border-radius: 1.33em;
+
+    background-color: #fff;
+    border-color: var(--button-purple-color);
+    color: var(--button-purple-color);
+
+    transition: background-color 0.1s ease-out, color 0.1s ease-out;
+}
+
+.button:hover {
+    cursor: pointer;
+
+    background-color: var(--button-purple-color);
+    color: #fff;
+}
+
+.button.big {
+    font-size: 1.5em;
+}
+
+.connect-to-metamask {
+    display: flex;
+    justify-content: center;
+
+    margin-top: 25vh;
 }
 
 .app-error {
