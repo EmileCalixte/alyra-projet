@@ -8,7 +8,7 @@ export default class Util {
             return address;
         }
 
-        const firstCharacters = address.slice(0, firstCharactersCount + 3);
+        const firstCharacters = address.slice(0, firstCharactersCount + 2);
         const lastCharacters = address.slice(lastCharactersCount * -1);
 
         return firstCharacters + "…" + lastCharacters;
@@ -34,7 +34,7 @@ export default class Util {
 
         return false;
     }
-    
+
     static getChainName(chainId: number): string|null {
         switch (chainId) {
             case 1337:
