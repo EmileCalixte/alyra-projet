@@ -28,6 +28,22 @@ const VotingInterface = () => {
         })();
     }, [voting]);
 
+    useEffect(() => {
+        if (!voting) {
+            return;
+        }
+
+        const onWorkflowStatusChange = (e: any) => {
+            console.log(e);
+        }
+
+        voting.on("WorkflowStatusChange", onWorkflowStatusChange);
+
+        return (() => {
+            voting.off("WorkflowStatusChange", onWorkflowStatusChange);
+        })
+    }, [voting]);
+
     return (
         <div className="voting-app">
             <Header/>
