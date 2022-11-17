@@ -5,6 +5,7 @@ import {createContext, useContext, useEffect, useState} from "react";
 import {appContext} from "../../App";
 import {WorkflowStatus} from "../../../util/WorkflowStatusUtil";
 import Admin from "./admin/Admin";
+import CurrentWorkflowStatusBanner from "./CurrentWorkflowStatusBanner";
 
 interface VotingInterfaceContext {
     workflowStatus: WorkflowStatus|undefined,
@@ -52,22 +53,26 @@ const VotingInterface = () => {
             <votingInterfaceContext.Provider value={{
                 workflowStatus,
             }}>
-                <div className="container-fluid">
+                <div className="container">
                     {workflowStatus === undefined &&
                     <>Loading...</>
                     }
 
                     {workflowStatus !== undefined &&
-                    <BrowserRouter>
-                        <Routes>
-                            <Route path="/" element={<Home/>}/>
+                    <>
+                        <CurrentWorkflowStatusBanner workflowStatus={workflowStatus}/>
 
-                            <Route path="/admin" element={<Admin/>}/>
+                        <BrowserRouter>
+                            <Routes>
+                                <Route path="/" element={<Home/>}/>
 
-                            {/* Redirect any unresolved route to home */}
-                            <Route path="*" element={<Navigate to="/" replace/>}/>
-                        </Routes>
-                    </BrowserRouter>
+                                <Route path="/admin" element={<Admin/>}/>
+
+                                {/* Redirect any unresolved route to home */}
+                                <Route path="*" element={<Navigate to="/" replace/>}/>
+                            </Routes>
+                        </BrowserRouter>
+                    </>
                     }
                 </div>
             </votingInterfaceContext.Provider>

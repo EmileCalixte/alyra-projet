@@ -12,10 +12,13 @@ body {
 
     background-color: #fafafa;
     color: #080808;
+
+    font-size: 1.1em;
 }
 
-.container-fluid {
+.container {
     width: auto !important;
+    max-width: 1140px !important;
 }
 
 .flex-spacer {
@@ -24,7 +27,7 @@ body {
 
 .button {
     font-family: inherit;
-    font-size: 1.05em;
+    font-size: 1em;
     font-weight: 700;
 
     padding: 0.33em 0.67em;
@@ -48,7 +51,7 @@ body {
 }
 
 .button.big {
-    font-size: 1.5em;
+    font-size: 1.4em;
 }
 
 .connect-to-metamask {
@@ -82,4 +85,12 @@ body {
     padding: 5px 10px;
 
     display: flex;
+}
+
+.current-workflow-status-banner {
+    background-color: var(--button-purple-color);
+    color: #fff;
+
+    padding: 10px 20px;
+    border-radius: 1.5em;
 }
