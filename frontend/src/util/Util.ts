@@ -25,4 +25,22 @@ export default class Util {
             return false;
         }
     }
+
+    static isChainSupported(chainId: number): boolean {
+        switch (chainId) {
+            case 1337:
+                return true;
+        }
+
+        return false;
+    }
+    
+    static getChainName(chainId: number): string|null {
+        switch (chainId) {
+            case 1337:
+                return 'Localhost';
+        }
+
+        return null;
+    }
 }

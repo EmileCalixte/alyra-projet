@@ -8,17 +8,20 @@ import Header from "./layout/Header";
 import Util from "../util/Util";
 
 interface AppContext {
+    chainId: number|undefined,
     account: string|undefined,
     isAccountOwner: boolean,
 }
 
 export const appContext = createContext<AppContext>({
+    chainId: undefined,
     account: undefined,
     isAccountOwner: false,
 })
 
 const App = () => {
     const [provider, setProvider] = useState<providers.Web3Provider|undefined|null>(undefined);
+    const [chainId, setChainId] = useState<number|undefined>(undefined);
     const [account, setAccount] = useState<string|undefined>(undefined);
     const [voting, setVoting] = useState<ethers.Contract|undefined>(undefined);
     const [isContractNotDeployed, setIscontractNotDeployed] = useState<boolean>(false);
@@ -38,7 +41,10 @@ const App = () => {
 
         console.log("Provider", provider);
 
-        setProvider(provider);
+        (async () => {
+            setChainId((await provider.getNetwork()).chainId);
+            setProvider(provider);
+        })();
     }, [account]);
 
     useEffect(() => {
@@ -111,10 +117,18 @@ const App = () => {
         )
     }
 
+    if (chainId !== undefined && !Util.isChainSupported(chainId)) {
+        return (
+            <div className="app">
+                Network not supported
+            </div>
+        )
+    }
+
     if (isContractNotDeployed) {
         return (
             <div className="app">
-                It seems that the contract does not exist on this network. Please change network and reload.
+                It seems that the contract does not exist on this network
             </div>
         )
     }
@@ -130,6 +144,7 @@ const App = () => {
     return (
         <div className="app">
             <appContext.Provider value={{
+                chainId,
                 account,
                 isAccountOwner,
             }}>
