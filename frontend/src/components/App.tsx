@@ -6,6 +6,7 @@ import {createContext, useCallback, useEffect, useState} from "react";
 import VOTING_JSON from "../artifacts/contracts/Voting.sol/Voting.json";
 import Header from "./layout/Header";
 import Util from "../util/Util";
+import AppError from './pages/AppError';
 
 interface AppContext {
     chainId: number|undefined,
@@ -111,25 +112,25 @@ const App = () => {
 
     if (provider === null) {
         return (
-            <div className="app">
+            <AppError>
                 No web3 provider found
-            </div>
+            </AppError>
         )
     }
 
     if (chainId !== undefined && !Util.isChainSupported(chainId)) {
         return (
-            <div className="app">
+            <AppError>
                 Network not supported
-            </div>
+            </AppError>
         )
     }
 
     if (isContractNotDeployed) {
         return (
-            <div className="app">
+            <AppError>
                 It seems that the contract does not exist on this network
-            </div>
+            </AppError>
         )
     }
 
