@@ -4,6 +4,7 @@ import Home from "./home/Home";
 import {createContext, useContext, useEffect, useState} from "react";
 import {appContext} from "../../App";
 import {WorkflowStatus} from "../../../util/WorkflowStatusUtil";
+import Admin from "./admin/Admin";
 
 interface VotingInterfaceContext {
     workflowStatus: WorkflowStatus|undefined,
@@ -60,6 +61,8 @@ const VotingInterface = () => {
                     <BrowserRouter>
                         <Routes>
                             <Route path="/" element={<Home/>}/>
+
+                            <Route path="/admin" element={<Admin/>}/>
 
                             {/* Redirect any unresolved route to home */}
                             <Route path="*" element={<Navigate to="/" replace/>}/>
