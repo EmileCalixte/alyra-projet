@@ -7,18 +7,20 @@ import VOTING_JSON from "../artifacts/contracts/Voting.sol/Voting.json";
 import Util from "../util/Util";
 import AppError from './pages/AppError';
 import ConnectToMetamaskButton from "./ConnectToMetamaskButton";
-import VotingInterface from "./VotingInterface";
+import VotingInterface from "./pages/votingInterface/VotingInterface";
 
 interface AppContext {
     chainId: number|undefined,
     account: string|undefined,
     isAccountOwner: boolean,
+    voting: ethers.Contract|undefined,
 }
 
 export const appContext = createContext<AppContext>({
     chainId: undefined,
     account: undefined,
     isAccountOwner: false,
+    voting: undefined,
 })
 
 const App = () => {
@@ -147,6 +149,7 @@ const App = () => {
                 chainId,
                 account,
                 isAccountOwner,
+                voting
             }}>
                 <VotingInterface/>
             </appContext.Provider>
