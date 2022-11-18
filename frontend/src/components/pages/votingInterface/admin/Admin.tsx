@@ -12,7 +12,13 @@ const Admin = () => {
     }
 
     return (
-        <>Admin</>
+        <div className="page-content">
+            <div className="row">
+                <div className="col-12">
+                    <h2>Voters</h2>
+                </div>
+            </div>
+        </div>
     );
 }
 
