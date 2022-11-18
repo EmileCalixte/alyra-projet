@@ -6,6 +6,7 @@ import {appContext} from "../../App";
 import {WorkflowStatus} from "../../../util/WorkflowStatusUtil";
 import Admin from "./admin/Admin";
 import CurrentWorkflowStatusBanner from "./CurrentWorkflowStatusBanner";
+import NavBar from "./NavBar";
 
 interface VotingInterfaceContext {
     workflowStatus: WorkflowStatus|undefined,
@@ -63,6 +64,9 @@ const VotingInterface = () => {
                         <CurrentWorkflowStatusBanner workflowStatus={workflowStatus}/>
 
                         <BrowserRouter>
+
+                            <NavBar/>
+
                             <Routes>
                                 <Route path="/" element={<Home/>}/>
 

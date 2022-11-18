@@ -95,6 +95,52 @@ body {
     border-radius: 1.5em;
 }
 
+.app-navbar {
+    margin-bottom: 1rem;
+}
+
+.app-navbar ul {
+    display: flex;
+    flex-wrap: wrap;
+
+    margin: 0;
+    padding: 0;
+}
+
+.app-navbar li {
+    list-style: none;
+}
+
+.app-navbar li > .navbar-disabled-item,
+.app-navbar li > a {
+    text-decoration: none;
+
+    display: inline-block;
+    padding: 10px;
+
+    font-weight: 700;
+    font-size: 1.1em;
+}
+
+.app-navbar li > .navbar-disabled-item {
+    cursor: default;
+    color: #888;
+}
+
+.app-navbar li > a {
+    color: var(--button-purple-color);
+
+    transition: border-bottom-color 0.1s ease-out;
+}
+
+.app-navbar li > a.active {
+    border-bottom: 3px solid var(--button-purple-color);
+}
+
+.app-navbar li > a:not(.active) {
+    border-bottom: 3px solid #ffffff00; /* Transparent */
+}
+
 .page-content {
     background-color: #fff;
     border-radius: 1.5em;
