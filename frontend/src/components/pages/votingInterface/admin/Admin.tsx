@@ -57,6 +57,12 @@ const Admin = () => {
             <div className="row">
                 <div className="col-12">
                     <h3>Registered voters</h3>
+
+                    {registeredVoters.length === 0 &&
+                    <p><i>No voters have been registered yet</i></p>
+                    }
+
+                    {registeredVoters.length > 0 &&
                     <ul>
                         {registeredVoters.map((voter, index) => {
                             return (
@@ -64,6 +70,7 @@ const Admin = () => {
                             );
                         })}
                     </ul>
+                    }
                 </div>
             </div>
         </div>
