@@ -70,11 +70,19 @@ body {
     padding: 0.5em 0.75em;
 }
 
-.one-input-form {
+.input.error {
+    border-color: #ff0000;
+}
+
+.input-error {
+    color: #ff0000;
+}
+
+.one-input-form .one-input-form-input-group {
     display: flex;
 }
 
-.one-input-form .input {
+.one-input-form .one-input-form-input-group .input {
     flex: 1;
     margin-right: 0.5em;
 }

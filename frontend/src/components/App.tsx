@@ -43,8 +43,6 @@ const App = () => {
 
         const provider = new providers.Web3Provider(window.ethereum);
 
-        console.log("Provider", provider);
-
         (async () => {
             setChainId((await provider.getNetwork()).chainId);
             setProvider(provider);
@@ -58,7 +56,9 @@ const App = () => {
 
         console.log("Initializing contract", process.env.REACT_APP_VOTING_ADDRESS, VOTING_JSON.abi);
 
-        const voting = new ethers.Contract(process.env.REACT_APP_VOTING_ADDRESS as string, VOTING_JSON.abi as any, provider);
+        const voting = new ethers.Contract(process.env.REACT_APP_VOTING_ADDRESS as string, VOTING_JSON.abi as any, provider.getSigner());
+
+        console.log("Contract initialized", voting);
 
         setVoting(voting);
     }, [provider]);

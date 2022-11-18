@@ -1,14 +1,37 @@
-import React, {useCallback, useState} from "react";
+import React, {useCallback, useContext, useState} from "react";
+import {appContext} from "../../../App";
+import {ethers} from "ethers";
 
 const AddVoter = () => {
-    const [inputValue, setInputValue] = useState("");
+    const {voting} = useContext(appContext);
 
-    const onSubmit = useCallback((e: React.FormEvent) => {
+    const [inputValue, setInputValue] = useState("");
+    const [inputError, setInputError] = useState<string|null>(null);
+
+    const onSubmit = useCallback(async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log(inputValue);
-        // TODO send transaction
-        setInputValue("");
-    }, [inputValue]);
+
+        if (!voting) {
+            return;
+        }
+
+        try {
+            const address = ethers.utils.getAddress(inputValue);
+
+            setInputError(null);
+
+            try {
+                console.log(await voting.addVoter(address));
+            } catch (error) {
+                console.error(error);
+                return;
+            }
+
+            setInputValue("");
+        } catch (error) {
+            setInputError("Invalid address or bad checksum");
+        }
+    }, [inputValue, voting]);
 
     return (
         <section className="admin-add-voter-section">
@@ -17,14 +40,21 @@ const AddVoter = () => {
                     <h3>Add voter</h3>
 
                     <form onSubmit={onSubmit} className="one-input-form">
-                        <input type="text"
-                               className="input"
-                               placeholder="0x…"
-                               maxLength={42}
-                               value={inputValue}
-                               onChange={e => setInputValue(e.target.value)}
-                        />
-                        <button type="submit" className="button m">Add voter</button>
+                        {inputError &&
+                        <div className="input-error">
+                            {inputError}
+                        </div>
+                        }
+                        <div className="one-input-form-input-group">
+                            <input type="text"
+                                   className={`input ${inputError ? "error" : ''}`}
+                                   placeholder="0x…"
+                                   maxLength={42}
+                                   value={inputValue}
+                                   onChange={e => setInputValue(e.target.value)}
+                            />
+                            <button type="submit" className="button m">Add voter</button>
+                        </div>
                     </form>
                 </div>
             </div>
