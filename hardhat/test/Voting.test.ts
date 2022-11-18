@@ -17,9 +17,12 @@ describe("Voting", () => {
         it("Should add a voter", async () => {
             const { voting, owner } = await loadFixture(deployFixture);
 
+            expect(await voting.getRegisteredVoterCount()).to.equal(0);
+
             await voting.addVoter(owner.address);
 
             expect((await voting.getVoter(owner.address)).isRegistered).to.equal(true);
+            expect(await voting.getRegisteredVoterCount()).to.equal(1);
         });
 
         it("Should prevent other account to add a voter", async () => {
@@ -27,10 +30,13 @@ describe("Voting", () => {
 
             await voting.addVoter(owner.address);
 
+            expect(await voting.getRegisteredVoterCount()).to.equal(1);
+
             await expect(voting.connect(otherAccounts[0]).addVoter(otherAccounts[0].address))
                 .to.be.revertedWith("Ownable: caller is not the owner");
 
             expect((await voting.getVoter(otherAccounts[0].address)).isRegistered).to.equal(false);
+            expect(await voting.getRegisteredVoterCount()).to.equal(1);
         });
 
         it("Should prevent other account to add a voter even if it's a registered voter", async () => {
@@ -39,10 +45,13 @@ describe("Voting", () => {
             await voting.addVoter(owner.address);
             await voting.addVoter(otherAccounts[0].address);
 
+            expect(await voting.getRegisteredVoterCount()).to.equal(2);
+
             await expect(voting.connect(otherAccounts[0]).addVoter(otherAccounts[1].address))
                 .to.be.revertedWith("Ownable: caller is not the owner");
 
             expect((await voting.getVoter(otherAccounts[1].address)).isRegistered).to.equal(false);
+            expect(await voting.getRegisteredVoterCount()).to.equal(2);
         });
 
         it("Should emit VoterRegistered event", async () => {
@@ -75,8 +84,12 @@ describe("Voting", () => {
             await expect(voting.addVoter(otherAccounts[0].address))
                 .not.to.be.reverted;
 
+            expect(await voting.getRegisteredVoterCount()).to.equal(2);
+
             await expect(voting.addVoter(otherAccounts[0].address))
                 .to.be.revertedWith("Already registered");
+
+            expect(await voting.getRegisteredVoterCount()).to.equal(2);
         });
     });
 
