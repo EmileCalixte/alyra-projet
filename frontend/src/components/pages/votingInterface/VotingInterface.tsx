@@ -7,19 +7,23 @@ import {WorkflowStatus} from "../../../util/WorkflowStatusUtil";
 import Admin from "./admin/Admin";
 import CurrentWorkflowStatusBanner from "./CurrentWorkflowStatusBanner";
 import NavBar from "./NavBar";
+import NotRegistered from "./notRegistered/NotRegistered";
 
 interface VotingInterfaceContext {
     workflowStatus: WorkflowStatus|undefined,
+    isAccountVoter: boolean,
 }
 
 export const votingInterfaceContext = createContext<VotingInterfaceContext>({
     workflowStatus: undefined,
+    isAccountVoter: false,
 });
 
 const VotingInterface = () => {
-    const {voting} = useContext(appContext);
+    const {account, voting} = useContext(appContext);
 
     const [workflowStatus, setWorkflowStatus] = useState<WorkflowStatus|undefined>(undefined);
+    const [isAccountVoter, setIsAccountVoter] = useState<boolean>(false);
 
     useEffect(() => {
         if (!voting) {
@@ -28,8 +32,14 @@ const VotingInterface = () => {
 
         (async () => {
             setWorkflowStatus(await voting.workflowStatus());
+
+            try {
+                console.log("TOTO SETISACCOUNTVOTER", await voting.getVoters(account));
+            } catch {
+                setIsAccountVoter(false);
+            }
         })();
-    }, [voting]);
+    }, [voting, account]);
 
     useEffect(() => {
         if (!voting) {
@@ -53,6 +63,7 @@ const VotingInterface = () => {
 
             <votingInterfaceContext.Provider value={{
                 workflowStatus,
+                isAccountVoter,
             }}>
                 <div className="container">
                     {workflowStatus === undefined &&
@@ -68,12 +79,21 @@ const VotingInterface = () => {
                             <NavBar/>
 
                             <Routes>
-                                <Route path="/" element={<Home/>}/>
 
                                 <Route path="/admin" element={<Admin/>}/>
 
-                                {/* Redirect any unresolved route to home */}
-                                <Route path="*" element={<Navigate to="/" replace/>}/>
+                                {!isAccountVoter &&
+                                <Route path="*" element={<NotRegistered/>}/>
+                                }
+
+                                {isAccountVoter &&
+                                <>
+                                    <Route path="/" element={<Home/>}/>
+
+                                    {/* Redirect any unresolved route to home */}
+                                    <Route path="*" element={<Navigate to="/" replace/>}/>
+                                </>
+                                }
                             </Routes>
                         </BrowserRouter>
                     </>

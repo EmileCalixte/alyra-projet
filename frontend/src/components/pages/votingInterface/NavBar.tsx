@@ -6,7 +6,7 @@ import NavBarItem from "./NavBarItem";
 
 const NavBar = () => {
     const {isAccountOwner} = useContext(appContext);
-    const {workflowStatus} = useContext(votingInterfaceContext);
+    const {workflowStatus, isAccountVoter} = useContext(votingInterfaceContext);
 
     const workflowStatusForNavBar = useMemo<WorkflowStatus>(() => {
         if (workflowStatus === undefined) {
@@ -21,23 +21,27 @@ const NavBar = () => {
             <ul>
                 <NavBarItem to="/">Home</NavBarItem>
 
-                <NavBarItem to="/proposals"
-                            disabled={workflowStatusForNavBar < WorkflowStatus.ProposalsRegistrationStarted}
-                >
-                    Proposals
-                </NavBarItem>
+                {isAccountVoter &&
+                <>
+                    <NavBarItem to="/proposals"
+                                disabled={workflowStatusForNavBar < WorkflowStatus.ProposalsRegistrationStarted}
+                    >
+                        Proposals
+                    </NavBarItem>
 
-                <NavBarItem to="/vote"
-                            disabled={workflowStatusForNavBar < WorkflowStatus.VotingSessionStarted}
-                >
-                    Vote
-                </NavBarItem>
+                    <NavBarItem to="/vote"
+                                disabled={workflowStatusForNavBar < WorkflowStatus.VotingSessionStarted}
+                    >
+                        Vote
+                    </NavBarItem>
 
-                <NavBarItem to="/results"
-                            disabled={workflowStatusForNavBar < WorkflowStatus.VotesTallied}
-                >
-                    Results
-                </NavBarItem>
+                    <NavBarItem to="/results"
+                                disabled={workflowStatusForNavBar < WorkflowStatus.VotesTallied}
+                    >
+                        Results
+                    </NavBarItem>
+                </>
+                }
 
                 {isAccountOwner &&
                 <NavBarItem to="/admin">Admin</NavBarItem>
