@@ -16,14 +16,14 @@ interface VotingInterfaceContext {
 
 export const votingInterfaceContext = createContext<VotingInterfaceContext>({
     workflowStatus: undefined,
-    isAccountVoter: false,
+    isAccountVoter: true,
 });
 
 const VotingInterface = () => {
     const {account, voting} = useContext(appContext);
 
     const [workflowStatus, setWorkflowStatus] = useState<WorkflowStatus|undefined>(undefined);
-    const [isAccountVoter, setIsAccountVoter] = useState<boolean>(false);
+    const [isAccountVoter, setIsAccountVoter] = useState<boolean>(true);
 
     useEffect(() => {
         if (!voting) {
@@ -34,8 +34,9 @@ const VotingInterface = () => {
             setWorkflowStatus(await voting.workflowStatus());
 
             try {
-                console.log("TOTO SETISACCOUNTVOTER", await voting.getVoters(account));
-            } catch {
+                setIsAccountVoter((await voting.getVoter(account)).isRegistered);
+            } catch (error) {
+                console.error(error);
                 setIsAccountVoter(false);
             }
         })();
