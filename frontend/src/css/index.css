@@ -54,6 +54,14 @@ body {
     font-size: 1.4em;
 }
 
+button[disabled],
+button[disabled]:hover {
+    cursor: default;
+    color: #888;
+    border-color: #888;
+    background-color: #fff;
+}
+
 .connect-to-metamask {
     display: flex;
     justify-content: center;

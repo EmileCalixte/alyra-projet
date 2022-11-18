@@ -1,8 +1,11 @@
-import React, {useCallback, useContext, useState} from "react";
+import React, {useCallback, useContext, useEffect, useState} from "react";
 import {appContext} from "../../../App";
 import {ethers} from "ethers";
 
-const AddVoter = () => {
+const AddVoter: React.FunctionComponent<{
+    alreadyRegisteredVoters: string[],
+    afterSubmit: (address: string) => any
+}> = ({alreadyRegisteredVoters, afterSubmit}) => {
     const {voting} = useContext(appContext);
 
     const [inputValue, setInputValue] = useState("");
@@ -28,10 +31,21 @@ const AddVoter = () => {
             }
 
             setInputValue("");
+
+            afterSubmit(address);
         } catch (error) {
             setInputError("Invalid address or bad checksum");
         }
-    }, [inputValue, voting]);
+    }, [inputValue, voting, afterSubmit]);
+
+    useEffect(() => {
+        if (alreadyRegisteredVoters.includes(inputValue)) {
+            setInputError("This address is already a voter");
+            return;
+        }
+
+        setInputError(null);
+    }, [inputValue, alreadyRegisteredVoters]);
 
     return (
         <section className="admin-add-voter-section">
@@ -53,7 +67,7 @@ const AddVoter = () => {
                                    value={inputValue}
                                    onChange={e => setInputValue(e.target.value)}
                             />
-                            <button type="submit" className="button m">Add voter</button>
+                            <button type="submit" className="button" disabled={inputError !== null}>Add voter</button>
                         </div>
                     </form>
                 </div>
