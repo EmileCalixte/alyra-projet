@@ -61,6 +61,24 @@ body {
     margin-top: 25vh;
 }
 
+.input {
+    font-size: 0.95em;
+    font-family: inherit;
+
+    border: 1px solid #888;
+    border-radius: 0.5em;
+    padding: 0.5em 0.75em;
+}
+
+.one-input-form {
+    display: flex;
+}
+
+.one-input-form .input {
+    flex: 1;
+    margin-right: 0.5em;
+}
+
 .app-error {
     position: fixed;
     top: 0;
@@ -148,4 +166,15 @@ body {
     padding: 10px 20px;
 
     box-shadow: 0 0 3px rgb(208 208 208);
+}
+
+@media (max-width: 767px) {
+    .one-input-form {
+        flex-direction: column;
+    }
+
+    .one-input-form .input {
+        margin-right: 0;
+        margin-bottom: 0.5em;
+    }
 }
