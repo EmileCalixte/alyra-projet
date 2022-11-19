@@ -4,6 +4,7 @@ import {appContext} from "../../../App";
 import {votingInterfaceContext} from "../VotingInterface";
 import {WorkflowStatus} from "../../../../util/WorkflowStatusUtil";
 import AddVoter from "./AddVoter";
+import VotersList from "./VotersList";
 
 const Admin = () => {
     const {workflowStatus} = useContext(votingInterfaceContext);
@@ -52,25 +53,8 @@ const Admin = () => {
                               afterSubmit={saveAddedVoter}
                     />
                     }
-                </div>
-            </div>
-            <div className="row">
-                <div className="col-12">
-                    <h3>Registered voters</h3>
 
-                    {registeredVoters.length === 0 &&
-                    <p><i>No voters have been registered yet</i></p>
-                    }
-
-                    {registeredVoters.length > 0 &&
-                    <ul>
-                        {registeredVoters.map((voter, index) => {
-                            return (
-                                <li key={index}>{voter}</li>
-                            );
-                        })}
-                    </ul>
-                    }
+                    <VotersList voters={registeredVoters}/>
                 </div>
             </div>
         </div>
