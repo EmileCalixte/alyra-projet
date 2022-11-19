@@ -55,6 +55,8 @@ const Vote = () => {
 
             if (voter.hasVoted) {
                 setVotedProposalId(voter.votedProposalId);
+            } else {
+                setVotedProposalId(null);
             }
         })();
     }, [voting, account]);
