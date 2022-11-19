@@ -114,9 +114,13 @@ describe("Voting", () => {
         it("Should add a genesis proposal when proposals registering starts", async () => {
             const { voting } = await loadFixture(deployRegisterProposalFixture);
 
+            expect(await voting.getProposalsCount()).to.equal(0);
+
             await voting.startProposalsRegistering();
 
             expect((await voting.getOneProposal(0)).description).to.equal('GENESIS');
+
+            expect(await voting.getProposalsCount()).to.equal(0);
         });
 
         it("Should add a proposal from a registered voter", async () => {
@@ -124,9 +128,13 @@ describe("Voting", () => {
 
             await voting.startProposalsRegistering();
 
+            expect(await voting.getProposalsCount()).to.equal(0);
+
             await voting.connect(registeredVoters[0]).addProposal(testProposalDescription);
 
             expect((await voting.getOneProposal(1)).description).to.equal(testProposalDescription);
+
+            expect(await voting.getProposalsCount()).to.equal(1);
         });
 
         it("Should revert if proposal description is empty", async () => {
@@ -134,8 +142,12 @@ describe("Voting", () => {
 
             await voting.startProposalsRegistering();
 
+            expect(await voting.getProposalsCount()).to.equal(0);
+
             await expect(voting.addProposal(""))
                 .to.be.revertedWith("Vous ne pouvez pas ne rien proposer");
+
+            expect(await voting.getProposalsCount()).to.equal(0);
         });
 
         it("Should revert if a proposal is submitted by an account which is not registered as a voter", async () => {
@@ -143,8 +155,12 @@ describe("Voting", () => {
 
             await voting.startProposalsRegistering();
 
+            expect(await voting.getProposalsCount()).to.equal(0);
+
             await expect(voting.connect(notRegisteredAccounts[0]).addProposal(testProposalDescription))
                 .to.be.revertedWith("You're not a voter");
+
+            expect(await voting.getProposalsCount()).to.equal(0);
         });
 
         it("Should revert if current workflow status is not ProposalsRegistrationStarted", async () => {

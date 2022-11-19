@@ -68,6 +68,17 @@ contract Voting is Ownable {
     }
 
     /**
+     * @dev Returns the count of proposals, excluding GENESIS proposal
+     */
+    function getProposalsCount() external onlyVoters view returns (uint) {
+        if (proposalsArray.length == 0) {
+            return 0;
+        }
+
+        return proposalsArray.length - 1;
+    }
+
+    /**
      * @dev Returns the requested proposal
      * @param _id The proposal ID
      */
