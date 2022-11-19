@@ -38,6 +38,26 @@ const WorkflowStatusAdmin = () => {
         setWorkflowStatus(WorkflowStatus.VotingSessionStarted);
     }, [voting, setWorkflowStatus]);
 
+    const endVotingSession = useCallback(async () => {
+        if (!voting) {
+            return;
+        }
+
+        await voting.endVotingSession();
+
+        setWorkflowStatus(WorkflowStatus.VotingSessionEnded);
+    }, [voting, setWorkflowStatus]);
+
+    const tallyVotes = useCallback(async () => {
+        if (!voting) {
+            return;
+        }
+
+        await voting.tallyVotes();
+
+        setWorkflowStatus(WorkflowStatus.VotesTallied);
+    }, [voting, setWorkflowStatus]);
+
     return (
         <div className="admin-workflow-status">
             <WorkflowStatusItem workflowStatus={WorkflowStatus.RegisteringVoters} num={1}>
@@ -66,21 +86,21 @@ const WorkflowStatusAdmin = () => {
 
             <WorkflowStatusItem workflowStatus={WorkflowStatus.VotingSessionStarted} num={4}>
                 {workflowStatus === WorkflowStatus.VotingSessionStarted &&
-                "Todo"
+                <button className="button" onClick={endVotingSession}>
+                    End voting session
+                </button>
                 }
             </WorkflowStatusItem>
 
             <WorkflowStatusItem workflowStatus={WorkflowStatus.VotingSessionEnded} num={5}>
                 {workflowStatus === WorkflowStatus.VotingSessionEnded &&
-                "Todo"
+                <button className="button" onClick={tallyVotes}>
+                    Tally votes & publish results
+                </button>
                 }
             </WorkflowStatusItem>
 
-            <WorkflowStatusItem workflowStatus={WorkflowStatus.VotesTallied} num={6}>
-                {workflowStatus === WorkflowStatus.VotesTallied &&
-                "Todo"
-                }
-            </WorkflowStatusItem>
+            <WorkflowStatusItem workflowStatus={WorkflowStatus.VotesTallied} num={6}/>
         </div>
     );
 }
