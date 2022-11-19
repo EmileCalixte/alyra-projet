@@ -12,7 +12,7 @@ const WorkflowStatusItem: React.FunctionComponent<{
     return (
         <div className={`admin-workflow-status-item ${workflowStatus === currentWorkflowStatus ? 'current' : ''}`}>
             <div className="admin-workflow-status-num">
-                {num}
+                <span>{num}</span>
             </div>
             <div className="admin-workflow-status-block">
                 <div className="admin-workflow-status-description">
