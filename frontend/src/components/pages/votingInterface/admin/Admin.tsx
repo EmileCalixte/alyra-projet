@@ -29,7 +29,7 @@ const Admin = () => {
         setRegisteredVoters(fetchedVoters);
     }, [voting])
 
-    const saveAddedVoter = useCallback(async (address: string) => {
+    const saveAddedVoter = useCallback((address: string) => {
         setRegisteredVoters([...registeredVoters, address]);
     }, [registeredVoters]);
 
