@@ -5,6 +5,7 @@ import {votingInterfaceContext} from "../VotingInterface";
 import {WorkflowStatus} from "../../../../util/WorkflowStatusUtil";
 import AddVoter from "./AddVoter";
 import VotersList from "./VotersList";
+import WorkflowStatusAdmin from "./WorkflowStatusAdmin";
 
 const Admin = () => {
     const {workflowStatus} = useContext(votingInterfaceContext);
@@ -55,6 +56,14 @@ const Admin = () => {
                     }
 
                     <VotersList voters={registeredVoters}/>
+                </div>
+            </div>
+
+            <div className="row">
+                <div className="col-12">
+                    <h2>Workflow status</h2>
+
+                    <WorkflowStatusAdmin/>
                 </div>
             </div>
         </div>

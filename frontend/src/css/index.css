@@ -184,6 +184,55 @@ button[disabled]:hover {
     box-shadow: 0 0 3px rgb(208 208 208);
 }
 
+.admin-workflow-status-item {
+    display: flex;
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+}
+
+.admin-workflow-status-item.current {
+    font-weight: 700;
+}
+
+.admin-workflow-status-item:not(.current) {
+    color: #888;
+}
+
+.admin-workflow-status-num {
+    width: 3em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.admin-workflow-status-num span {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 1.5em;
+    height: 1.5em;
+
+    border: 2px solid var(--button-purple-color);
+    border-radius: 1em;
+}
+
+.admin-workflow-status-item:not(.current) .admin-workflow-status-num span {
+    border-color: #888;
+}
+
+.admin-workflow-status-block {
+    padding-left: 1em;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.admin-workflow-status-action-container {
+    margin-top: 0.5em;
+}
+
 @media (max-width: 767px) {
     .one-input-form {
         flex-direction: column;
