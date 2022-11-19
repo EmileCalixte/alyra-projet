@@ -131,6 +131,10 @@ const VotingInterface = () => {
                     }
                 </div>
             </votingInterfaceContext.Provider>
+
+            <div className="contract-address">
+                Contract address: {voting?.address}
+            </div>
         </div>
     )
 }

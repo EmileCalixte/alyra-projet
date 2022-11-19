@@ -242,6 +242,14 @@ th, td {
     margin-top: 0.5em;
 }
 
+.contract-address {
+    margin-top: 0.5em;
+
+    text-align: center;
+    font-size: 0.9em;
+    color: #888;
+}
+
 @media (max-width: 767px) {
     .one-input-form {
         flex-direction: column;
