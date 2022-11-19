@@ -6,13 +6,13 @@
 docker compose up
 ```
 
-Lors du démarrage, les dépendances NPM sont installées si nécessaire et la blockchain de développement hardhat est lancée.
+Lors du démarrage, les dépendances NPM sont installées si nécessaire et la blockchain de développement hardhat ainsi que l'application frontend sont lancées.
 
 > Pour exécuter des commandes dans le container, par exemple pour compiler ou lancer les tests, il faudra les précéder de `docker compose exec hardhat <commande>`.
 
 ## Tests automatisés
 
-Les tests automatisés se lancent avec la commande suivante
+Les tests automatisés du smart contract se lancent avec la commande suivante
 
 ```sh
 docker compose exec hardhat npx hardhat test
@@ -51,7 +51,7 @@ docker compose exec hardhat npx hardhat test
 
 ## Compilation et déploiement
 
-Compiler les smart contracts :
+Compiler le smart contract :
 
 ```sh
 docker compose exec hardhat npx hardhat compile
@@ -62,6 +62,18 @@ Exécuter le script de déploiement :
 ```sh
 docker compose exec hardhat npx hardhat run scripts/deploy.ts
 ```
+
+## Application décentralisée
+
+Renseigner l'adresse du smart contract dans le fichier `frontend/.env`
+
+Redémarrer le container Docker pour prendre en compte la nouvelle adresse : 
+
+```sh
+docker compose restart frontend
+```
+
+L'application est accessible à l'URL [http://localhost](http://localhost)
 
 ## Objectif
 
