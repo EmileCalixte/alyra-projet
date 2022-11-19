@@ -24,7 +24,7 @@ const AddVoter: React.FunctionComponent<{
             setInputError(null);
 
             try {
-                console.log(await voting.addVoter(address));
+                await voting.addVoter(address);
             } catch (error) {
                 console.error(error);
                 return;
