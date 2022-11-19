@@ -12,11 +12,13 @@ import Util from "../../../util/Util";
 
 interface VotingInterfaceContext {
     workflowStatus: WorkflowStatus|undefined,
+    setWorkflowStatus: (workflowStatus: WorkflowStatus) => any,
     isAccountVoter: boolean,
 }
 
 export const votingInterfaceContext = createContext<VotingInterfaceContext>({
     workflowStatus: undefined,
+    setWorkflowStatus: () => {},
     isAccountVoter: true,
 });
 
@@ -84,6 +86,7 @@ const VotingInterface = () => {
 
             <votingInterfaceContext.Provider value={{
                 workflowStatus,
+                setWorkflowStatus,
                 isAccountVoter,
             }}>
                 <div className="container">

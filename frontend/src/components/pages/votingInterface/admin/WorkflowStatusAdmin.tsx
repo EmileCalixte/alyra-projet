@@ -1,16 +1,28 @@
-import {useContext} from "react";
+import {useCallback, useContext} from "react";
 import {votingInterfaceContext} from "../VotingInterface";
 import {WorkflowStatus} from "../../../../util/WorkflowStatusUtil";
 import WorkflowStatusItem from "./WorkflowStatusItem";
+import {appContext} from "../../../App";
 
 const WorkflowStatusAdmin = () => {
-    const {workflowStatus} = useContext(votingInterfaceContext);
+    const {voting} = useContext(appContext);
+    const {workflowStatus, setWorkflowStatus} = useContext(votingInterfaceContext);
+
+    const startProposalsRegistering = useCallback(async () => {
+        if (!voting) {
+            return;
+        }
+
+        await voting.startProposalsRegistering();
+
+        setWorkflowStatus(WorkflowStatus.ProposalsRegistrationStarted);
+    }, [voting, setWorkflowStatus]);
 
     return (
         <div className="admin-workflow-status">
             <WorkflowStatusItem workflowStatus={WorkflowStatus.RegisteringVoters} num={1}>
                 {workflowStatus === WorkflowStatus.RegisteringVoters &&
-                <button className="button">
+                <button className="button" onClick={startProposalsRegistering}>
                     End registering voters phase & start proposals registration
                 </button>
                 }
