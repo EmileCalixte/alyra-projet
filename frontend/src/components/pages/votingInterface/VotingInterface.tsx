@@ -9,6 +9,7 @@ import CurrentWorkflowStatusBanner from "./CurrentWorkflowStatusBanner";
 import NavBar from "./NavBar";
 import NotRegistered from "./notRegistered/NotRegistered";
 import Util from "../../../util/Util";
+import Proposals from "./proposals/Proposals";
 
 interface VotingInterfaceContext {
     workflowStatus: WorkflowStatus|undefined,
@@ -114,6 +115,7 @@ const VotingInterface = () => {
                                 {isAccountVoter &&
                                 <>
                                     <Route path="/" element={<Home/>}/>
+                                    <Route path="/proposals" element={<Proposals/>}/>
 
                                     {/* Redirect any unresolved route to home */}
                                     <Route path="*" element={<Navigate to="/" replace/>}/>
