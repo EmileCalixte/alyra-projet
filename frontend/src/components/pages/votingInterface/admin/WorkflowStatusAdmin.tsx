@@ -18,6 +18,26 @@ const WorkflowStatusAdmin = () => {
         setWorkflowStatus(WorkflowStatus.ProposalsRegistrationStarted);
     }, [voting, setWorkflowStatus]);
 
+    const endProposalsRegistering = useCallback(async () => {
+        if (!voting) {
+            return;
+        }
+
+        await voting.endProposalsRegistering();
+
+        setWorkflowStatus(WorkflowStatus.ProposalsRegistrationEnded);
+    }, [voting, setWorkflowStatus]);
+
+    const startVotingSession = useCallback(async () => {
+        if (!voting) {
+            return;
+        }
+
+        await voting.startVotingSession();
+
+        setWorkflowStatus(WorkflowStatus.VotingSessionStarted);
+    }, [voting, setWorkflowStatus]);
+
     return (
         <div className="admin-workflow-status">
             <WorkflowStatusItem workflowStatus={WorkflowStatus.RegisteringVoters} num={1}>
@@ -30,13 +50,17 @@ const WorkflowStatusAdmin = () => {
 
             <WorkflowStatusItem workflowStatus={WorkflowStatus.ProposalsRegistrationStarted} num={2}>
                 {workflowStatus === WorkflowStatus.ProposalsRegistrationStarted &&
-                "Todo"
+                <button className="button" onClick={endProposalsRegistering}>
+                    End proposals registration
+                </button>
                 }
             </WorkflowStatusItem>
 
             <WorkflowStatusItem workflowStatus={WorkflowStatus.ProposalsRegistrationEnded} num={3}>
                 {workflowStatus === WorkflowStatus.ProposalsRegistrationEnded &&
-                "Todo"
+                <button className="button" onClick={startVotingSession}>
+                    Start voting session
+                </button>
                 }
             </WorkflowStatusItem>
 
