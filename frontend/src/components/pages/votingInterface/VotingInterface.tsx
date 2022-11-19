@@ -8,6 +8,7 @@ import Admin from "./admin/Admin";
 import CurrentWorkflowStatusBanner from "./CurrentWorkflowStatusBanner";
 import NavBar from "./NavBar";
 import NotRegistered from "./notRegistered/NotRegistered";
+import Util from "../../../util/Util";
 
 interface VotingInterfaceContext {
     workflowStatus: WorkflowStatus|undefined,
@@ -57,6 +58,25 @@ const VotingInterface = () => {
             voting.off("WorkflowStatusChange", onWorkflowStatusChange);
         })
     }, [voting]);
+
+    // Watch for VoterRegistered event
+    useEffect(() => {
+        if (!voting || !account) {
+            return;
+        }
+
+        const onVoterRegistered = (address: string) => {
+            if (Util.areAddressesEqual(address, account)) {
+                setIsAccountVoter(true);
+            }
+        }
+
+        voting.on("VoterRegistered", onVoterRegistered);
+
+        return (() => {
+            voting.off("VoterRegistered", onVoterRegistered);
+        })
+    }, [voting, account])
 
     return (
         <div className="voting-app">
