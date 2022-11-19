@@ -45,13 +45,14 @@ const VotingInterface = () => {
         })();
     }, [voting, account]);
 
+    // Watch for WorkflowStatusChange event
     useEffect(() => {
         if (!voting) {
             return;
         }
 
-        const onWorkflowStatusChange = (e: any) => {
-            console.log(e);
+        const onWorkflowStatusChange = (previousStatus: WorkflowStatus, newStatus: WorkflowStatus) => {
+            setWorkflowStatus(newStatus);
         }
 
         voting.on("WorkflowStatusChange", onWorkflowStatusChange);
