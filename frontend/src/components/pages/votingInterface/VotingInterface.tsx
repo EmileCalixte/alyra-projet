@@ -10,6 +10,7 @@ import NavBar from "./NavBar";
 import NotRegistered from "./notRegistered/NotRegistered";
 import Util from "../../../util/Util";
 import Proposals from "./proposals/Proposals";
+import Vote from "./vote/Vote";
 
 interface VotingInterfaceContext {
     workflowStatus: WorkflowStatus|undefined,
@@ -116,6 +117,7 @@ const VotingInterface = () => {
                                 <>
                                     <Route path="/" element={<Home/>}/>
                                     <Route path="/proposals" element={<Proposals/>}/>
+                                    <Route path="/vote" element={<Vote/>}/>
 
                                     {/* Redirect any unresolved route to home */}
                                     <Route path="*" element={<Navigate to="/" replace/>}/>
