@@ -73,7 +73,7 @@ Redémarrer le container Docker pour prendre en compte la nouvelle adresse :
 docker compose restart frontend
 ```
 
-L'application est accessible à l'URL [http://localhost](http://localhost)
+L'application est accessible à l'URL [http://localhost](http://localhost).
 
 ## Objectif
 
