@@ -14,7 +14,7 @@
 /build
 
 #Hardhat files
-/src/artifacts
+/src/artifacts/build-info
 
 # misc
 .DS_Store
