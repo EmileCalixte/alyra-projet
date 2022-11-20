@@ -28,6 +28,7 @@ export default class Util {
 
     static isChainSupported(chainId: number): boolean {
         switch (chainId) {
+            case 5:
             case 31337:
                 return true;
         }
@@ -37,6 +38,8 @@ export default class Util {
 
     static getChainName(chainId: number): string|null {
         switch (chainId) {
+            case 5:
+                return 'Görli';
             case 31337:
                 return 'Localhost';
         }
